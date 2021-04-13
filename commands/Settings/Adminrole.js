@@ -45,7 +45,7 @@ module.exports = {
 					embed
 						.setColor(`${colour}`)
 						.setDescription(
-							`<a:ERROR:${erroremoji}>┊Please Give Me The Valid Adminrole That You Want To Set!`
+							`<a:ERROR:${erroremoji}>┊Please Give Me Valid Adminrole That You Want To Set!`
 						)
 						.setAuthor(nickname, message.author.displayAvatarURL())
 						.setFooter(
