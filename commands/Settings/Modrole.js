@@ -82,7 +82,7 @@ module.exports = {
 				embed
 					.setColor(`${colour}`)
 					.setDescription(
-						`<a:SUCCESSFULL:${sucessemoji}>┊Sucessfully Set To New Modrole.\n<a:ARROW:${arrowemoji}>┊Now Your Modrole Is \**${modrole}\**`
+						`<a:SUCCESSFULL:${sucessemoji}>┊Sucessfully Set To New Modrole.\n<a:ARROW:${arrowemoji}>┊Now Your Modrole Is \**${modrole.id}\**`
 					)
 					.setAuthor(nickname, message.author.displayAvatarURL())
 					.setFooter(
