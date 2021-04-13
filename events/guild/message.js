@@ -146,7 +146,7 @@ module.exports = async (bot, message) => {
 				!message.member.roles.cache.has(`${modrole}`) ||
 				!message.member.roles.cache.has(`${adminrole}`) ||
 				!message.member.hasPermission('ADMINISTRATOR') ||
-				message.author.id != owner
+				!message.author.id === owner
 			) {
 				return message.author
 					.send(
@@ -189,7 +189,7 @@ module.exports = async (bot, message) => {
 			if (
 				!message.member.roles.cache.has(`${adminrole}`) ||
 				!message.member.hasPermission('ADMINISTRATOR') ||
-				message.author.id != owner
+				!message.author.id === owner
 			) {
 				return message.author
 					.send(
