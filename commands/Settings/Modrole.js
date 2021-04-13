@@ -4,7 +4,7 @@ module.exports = {
 	description: 'Use This Command To Set Server Modrole!',
 	usage: `Modrole <@Your Moderole>`,
 	category: 'Settings',
-	admin: true,
+	permissions: ["ADMINISTRATOR"],
 	aliases: ['setmodrole'],
 	run: async (
 		client,
