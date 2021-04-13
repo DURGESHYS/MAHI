@@ -207,6 +207,26 @@ module.exports = async (bot, message) => {
 					});
 			}
 		}
+		if (command.guildowner) {
+			if (message.author.id != message.guild.owner.id) {
+				return message.author
+					.send(
+						embed
+							.setAuthor(nickname, message.author.displayAvatarURL())
+							.setColor(`${colour}`)
+							.setDescription(
+								`<a:ERROR:${erroremoji}>┊Only Guild Owner Can Use This Command.`
+							)
+							.setFooter(
+								`┊GUILD┊OWNER┊  ${bot.user.username}`,
+								bot.user.displayAvatarURL()
+							)
+					)
+					.then(m => {
+						m.delete({ timeout: 60000 }).catch(() => undefined);
+					});
+			}
+		}
 		if (command.owner) {
 			if (message.author.id != owner) {
 				return message.author
@@ -215,7 +235,7 @@ module.exports = async (bot, message) => {
 							.setAuthor(nickname, message.author.displayAvatarURL())
 							.setColor(`${colour}`)
 							.setDescription(
-								`<a:ERROR:${erroremoji}>┊Only Bot Owner Use This Command`
+								`<a:ERROR:${erroremoji}>┊Only Bot Owner Can Use This Command.`
 							)
 							.setFooter(
 								`┊BOT┊OWNER┊  ${bot.user.username}`,
