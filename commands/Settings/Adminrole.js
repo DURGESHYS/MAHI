@@ -82,7 +82,7 @@ module.exports = {
 				embed
 					.setColor(`${colour}`)
 					.setDescription(
-						`<a:SUCCESSFULL:${sucessemoji}>┊Sucessfully Set To New Adminrole.\n<a:ARROW:${arrowemoji}>┊Now Your Adminrole Is \**${adminrole}\**`
+						`<a:SUCCESSFULL:${sucessemoji}>┊Sucessfully Set To New Adminrole.\n<a:ARROW:${arrowemoji}>┊Now Your Adminrole Is \**${adminrole.id}\**`
 					)
 					.setAuthor(nickname, message.author.displayAvatarURL())
 					.setFooter(
