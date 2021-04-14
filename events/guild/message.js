@@ -21,25 +21,25 @@ module.exports = async (bot, message) => {
 	if (prefix === null) {
 		prefix = default_prefix;
 	}
-	let colour = db.get(`colour_${message.guild.id}`);
+	let colour = db.get(`colour`);
 
 	if (colour === null) {
 		colour = Color;
 	}
 
-	let erroremoji = db.get(`erroremoji_${message.guild.id}`);
+	let erroremoji = db.get(`erroremoji`);
 	if (erroremoji === null) {
 		erroremoji = erroremo;
 	}
-	let wrongemoji = db.get(`wrongemoji_${message.guild.id}`);
+	let wrongemoji = db.get(`wrongemoji`);
 	if (wrongemoji === null) {
 		wrongemoji = wrongemo;
 	}
-	let sucessemoji = db.get(`sucessemoji_${message.guild.id}`);
+	let sucessemoji = db.get(`sucessemoji`);
 	if (sucessemoji === null) {
 		sucessemoji = sucessemo;
 	}
-	let arrowemoji = db.get(`arrowemoji_${message.guild.id}`);
+	let arrowemoji = db.get(`arrowemoji`);
 	if (arrowemoji === null) {
 		arrowemoji = arrowemo;
 	}
