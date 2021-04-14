@@ -32,7 +32,7 @@ module.exports = {
 			//    categories emojies
 			const emocat = {};
 			//    hidden categories
-			const hidcat = [];
+			const hidcat = ["Owner"];
 			readdirSync('./commands/').forEach(dir => {
 				if (hidcat.includes(dir)) return;
 				const ename = `${emocat[dir]} ${dir.toUpperCase()}`;
