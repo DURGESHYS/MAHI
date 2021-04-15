@@ -247,6 +247,26 @@ module.exports = async (bot, message) => {
 					});
 			}
 		}
+		if (command.botadmin) {
+			if (!message.guild.me.hasPermission('ADMINISTRATOR')) {
+				return message.author
+					.send(
+						embed
+							.setColor(`${colour}`)
+							.setDescription(
+								`<a:ERROR:${erroremoji}>┊Please Give Me to \`Administor\` Permission`
+							)
+							.setAuthor(nickname, message.author.displayAvatarURL())
+							.setFooter(
+								`┊BOT┊ADMINISTOR┊PERMISSION┊  ${client.user.username}`,
+								client.user.displayAvatarURL()
+							)
+					)
+					.then(m => {
+						m.delete({ timeout: 60000 }).catch(() => undefined);
+					});
+			}
+		}
 		if (command.permissions) {
 			const validPermissions = [
 				'CREATE_INSTANT_INVITE',
@@ -295,7 +315,7 @@ module.exports = async (bot, message) => {
 				}
 				if (invalidPerms.length) {
 					if (
-						message.guild.me.hasPermission('MANAGE_MESSAGES' || 'ADMINISTRATOR')
+						message.guild.me.hasPermission('ADMINISTRATOR')
 					) {
 						message.delete().catch(() => undefined);
 					}
@@ -322,83 +342,10 @@ module.exports = async (bot, message) => {
 				}
 			}
 		}
-		if (command.botpermissions) {
-			const validBotPermissions = [
-				'CREATE_INSTANT_INVITE',
-				'KICK_MEMBERS',
-				'BAN_MEMBERS',
-				'ADMINISTRATOR',
-				'MANAGE_CHANNELS',
-				'MANAGE_GUILD',
-				'ADD_REACTIONS',
-				'VIEW_AUDIT_LOG',
-				'PRIORITY_SPEAKER',
-				'STREAM',
-				'VIEW_CHANNEL',
-				'SEND_MESSAGES',
-				'SEND_TTS_MESSAGES',
-				'MANAGE_MESSAGES',
-				'EMBED_LINKS',
-				'ATTACH_FILES',
-				'READ_MESSAGE_HISTORY',
-				'MENTION_EVERYONE',
-				'USE_EXTERNAL_EMOJIS',
-				'VIEW_GUILD_INSIGHTS',
-				'CONNECT',
-				'SPEAK',
-				'MUTE_MEMBERS',
-				'DEAFEN_MEMBERS',
-				'MOVE_MEMBERS',
-				'USE_VAD',
-				'CHANGE_NICKNAME',
-				'MANAGE_NICKNAMES',
-				'MANAGE_ROLES',
-				'MANAGE_WEBHOOKS',
-				'MANAGE_EMOJIS'
-			];
-			if (command.botpermissions.length) {
-				let invalidBotPerms = [];
-				for (const perm of command.botpermissions) {
-					if (!validBotPermissions.includes(perm)) {
-						return console.log(`Invalid Permissions ${perm}`);
-					}
-					if (!message.guild.me.hasPermission(perm)) {
-						invalidBotPerms.push(perm);
-					}
-				}
-				if (invalidBotPerms.length) {
-					if (
-						message.guild.me.hasPermission('MANAGE_MESSAGES' || 'ADMINISTRATOR')
-					) {
-						message.delete().catch(() => undefined);
-					}
-					let CommandName =
-						command.name.charAt(0).toUpperCase() + command.name.slice(1);
-					return message.author
-						.send(
-							embed
-								.setAuthor(nickname, message.author.displayAvatarURL())
-								.setColor(`${colour}`)
-								.setDescription(
-									`<a:ERROR:${erroremoji}>┊Require Bot Permissions for ${CommandName} Command:\n<a:ARROW:${arrowemoji}>┊\`${invalidBotPerms.join(
-										', '
-									)}\``
-								)
-								.setFooter(
-									`┊BOT┊PERMISSIONS┊  ${bot.user.username}`,
-									bot.user.displayAvatarURL()
-								)
-						)
-						.then(m => {
-							m.delete({ timeout: 60000 }).catch(() => undefined);
-						});
-				}
-			}
-		}
 		if (command.timeout) {
 			if (Timeout.has(`${message.author.id}${command.name}`)) {
 				if (
-					message.guild.me.hasPermission('MANAGE_MESSAGES' || 'ADMINISTRATOR')
+					message.guild.me.hasPermission('ADMINISTRATOR')
 				) {
 					message.delete().catch(() => undefined);
 				}
@@ -424,7 +371,7 @@ module.exports = async (bot, message) => {
 					});
 			} else {
 				if (
-					message.guild.me.hasPermission('MANAGE_MESSAGES' || 'ADMINISTRATOR')
+					message.guild.me.hasPermission('ADMINISTRATOR')
 				) {
 					message.delete().catch(() => undefined);
 				}
@@ -450,7 +397,7 @@ module.exports = async (bot, message) => {
 			}
 		} else {
 			if (
-				message.guild.me.hasPermission('MANAGE_MESSAGES' || 'ADMINISTRATOR')
+				message.guild.me.hasPermission('ADMINISTRATOR')
 			) {
 				message.delete().catch(() => undefined);
 			}
