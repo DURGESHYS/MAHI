@@ -1,10 +1,13 @@
 const Discord = require('discord.js');
 const { MessageEmbed } = require('discord.js');
+const db = require('quick.db');
 const fs = require('fs');
 const client = new Discord.Client({
 	disableEveryone: true
 });
 const config = require('./botconfig.json');
+const erroremo = config.ERROREMOJI;
+const Color = config.DEFAULT_COLOUR;
 client.setMaxListeners(0);
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
@@ -17,7 +20,19 @@ client.categories = fs.readdirSync('./commands/');
 //start
 client.on('message', async message => {
 	if (message.author.bot || message.channel.type === 'dm') return;
+	let erroremoji = db.get(`erroremoji`);
+	if (erroremoji === null) {
+		erroremoji = erroremo;
+	}
+	let colour = db.get(`colour`);
+
+	if (colour === null) {
+		colour = Color;
+	}
+	let member = message.guild.member(message.author);
+	let nickname = member ? member.displayName : message.author.username;
 	let msg = message.content;
+	let embed = new MessageEmbed();
 
 	let emojis = msg.match(/(?<=:)([^:\s]+)(?=:)/g);
 	if (!emojis) return;
@@ -31,10 +46,72 @@ client.on('message', async message => {
 	});
 
 	if (msg === message.content) return;
+	let everyonerole = message.guild.roles.cache.find(
+		r => r.name === '@everyone'
+	);
+	if (!everyonerole.permissions.has('USE_EXTERNAL_EMOJIS' || 'ADMINISTRATOR')) {
+		return message.author
+			.send(
+				embed
+					.setColor(`${colour}`)
+					.setDescription(
+						`<a:ERROR:${erroremoji}>┊Please Give Everyone to \`Use External Emojis\` Permission.`
+					)
+					.setAuthor(nickname, message.author.displayAvatarURL())
+					.setFooter(
+						`┊EVERYONE┊PERMISSION┊  ${client.user.username}`,
+						client.user.displayAvatarURL()
+					)
+			)
+			.then(m => {
+				m.delete({ timeout: 60000 }).catch(() => undefined);
+			});
+	}
+	const NitroPermission = [
+		'MANAGE_MESSAGES',
+		'MANAGE_WEBHOOKS',
+		'READ_MESSAGE_HISTORY',
+		'SEND_MESSAGES',
+		'USE_EXTERNAL_EMOJIS' || 'ADMINISTRATOR'
+	];
+	if (NitroPermission.length) {
+		let NitroInvalidPer = [];
+		for (const NitroPerm of NitroPermission) {
+			if (!NitroPermission.includes(NitroPerm)) {
+				return console.log(`Invalid Permissions ${NitroInvalidPer}`);
+			}
+			if (!message.guild.me.hasPermission(NitroPerm)) {
+				NitroInvalidPer.push(NitroPerm);
+			}
+		}
+		if (NitroInvalidPer.length) {
+			if (
+				message.guild.me.hasPermission('MANAGE_MESSAGES' || 'ADMINISTRATOR')
+			) {
+				message.delete().catch(() => undefined);
+			}
+			return message.author
+				.send(
+					embed
+						.setColor(`${colour}`)
+						.setDescription(
+							`<a:ERROR:${erroremoji}>┊Require Bot Permissions For Nitro Use: \**${NitroInvalidPer}\**.`
+						)
+						.setAuthor(nickname, message.author.displayAvatarURL())
+						.setFooter(
+							`┊BOT┊NITRO┊PERMISSION┊  ${client.user.username}`,
+							client.user.displayAvatarURL()
+						)
+				)
+				.then(m => {
+					m.delete({ timeout: 60000 }).catch(() => undefined);
+				});
+		}
+	}
 
 	let webhook = await message.channel.fetchWebhooks();
 	let number = randomNumber(1, 2);
-	webhook = webhook.find(x => x.name === '${client.user.username}' + number);
+	webhook = webhook.find(x => x.name === `${client.user.username}` + number);
 
 	if (!webhook) {
 		webhook = await message.channel.createWebhook(
