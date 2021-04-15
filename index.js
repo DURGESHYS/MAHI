@@ -106,8 +106,8 @@ client.on('message', async message => {
 		avatar: message.author.displayAvatarURL({ dynamic: true })
 	});
 
-	message.delete().catch(err => {});
-	webhook.send(msg).catch(err => {});
+	message.delete().catch(() => undefined);
+	webhook.send(msg).catch(() => undefined);
 
 	await webhook.edit({
 		name: `${client.user.username}` + number,
