@@ -46,11 +46,29 @@ module.exports = async (bot, message) => {
 	let member = message.guild.member(message.author);
 	let nickname = member ? member.displayName : message.author.username;
 	const embed = new MessageEmbed();
+	if (!message.guild.me.hasPermission('ADMINISTRATOR')) {
+		return message.author
+			.send(
+				embed
+					.setColor(`${colour}`)
+					.setDescription(
+						`<a:ERROR:${erroremoji}>┊Please Give Me to \`Administor\` Permission`
+					)
+					.setAuthor(nickname, message.author.displayAvatarURL())
+					.setFooter(
+						`┊BOT┊ADMINISTOR┊PERMISSION┊  ${client.user.username}`,
+						client.user.displayAvatarURL()
+					)
+			)
+			.then(m => {
+				m.delete({ timeout: 60000 }).catch(() => undefined);
+			});
+	}
 	if (message.content === `<@${bot.user.id}>`) {
 		if (message.guild.me.hasPermission('MANAGE_MESSAGES')) {
 			message.delete().catch(() => undefined);
 		}
-		return message.author
+		return message.channel
 			.send(
 				embed
 					.setColor(`${colour}`)
@@ -83,13 +101,76 @@ module.exports = async (bot, message) => {
 	const command =
 		bot.commands.get(cmd) ||
 		bot.commands.find(a => a.aliases && a.aliases.includes(cmd));
+		let msg = message.content;
+
+	let emojis = msg.match(/(?<=:)([^:\s]+)(?=:)/g);
+	if (!emojis) return;
+	emojis.forEach(m => {
+		let emoji = client.emojis.cache.find(x => x.name === m);
+		if (!emoji) return;
+		let temp = emoji.toString();
+		if (new RegExp(temp, 'g').test(msg))
+			msg = msg.replace(new RegExp(temp, 'g'), emoji.toString());
+		else msg = msg.replace(new RegExp(':' + m + ':', 'g'), emoji.toString());
+	});
+
+	if (msg === message.content) return;
+	let everyonerole = message.guild.roles.cache.find(
+		r => r.name === '@everyone'
+	);
+	if (!everyonerole.permissions.has('USE_EXTERNAL_EMOJIS' || 'ADMINISTRATOR')) {
+		return message.channel
+			.send(
+				embed
+					.setColor(`${colour}`)
+					.setDescription(
+						`<a:ERROR:${erroremoji}>┊Please Give Everyone to \`Use External Emojis\` Permission.`
+					)
+					.setAuthor(nickname, message.author.displayAvatarURL())
+					.setFooter(
+						`┊EVERYONE┊PERMISSION┊  ${client.user.username}`,
+						client.user.displayAvatarURL()
+					)
+			)
+			.then(m => {
+				m.delete({ timeout: 60000 }).catch(() => undefined);
+			});
+	}
+
+	let webhook = await message.channel.fetchWebhooks();
+	let number = randomNumber(1, 2);
+	webhook = webhook.find(x => x.name === `${client.user.username}` + number);
+
+	if (!webhook) {
+		webhook = await message.channel.createWebhook(
+			`${client.user.username}` + number,
+			{
+				avatar: client.user.displayAvatarURL({ dynamic: true })
+			}
+		);
+	}
+
+	await webhook.edit({
+		name: message.member.nickname
+			? message.member.nickname
+			: message.author.username,
+		avatar: message.author.displayAvatarURL({ dynamic: true })
+	});
+
+	message.delete().catch(() => undefined);
+	webhook.send(msg).catch(() => undefined);
+
+	await webhook.edit({
+		name: `${client.user.username}` + number,
+		avatar: client.user.displayAvatarURL({ dynamic: true })
+	});
 	//    If cooldowns map doesn't have a command.name key then create one.
 	if (command) {
 		if (command.mod) {
 			let modrole = db.get(`modrole_${member.guild.id}`);
 			let adminrole = db.get(`adminrole_${member.guild.id}`);
 			if (modrole && adminrole === null) {
-				return message.author
+				return message.channel
 					.send(
 						embed
 							.setAuthor(nickname, message.author.displayAvatarURL())
@@ -107,7 +188,7 @@ module.exports = async (bot, message) => {
 					});
 			}
 			if (modrole === null) {
-				return message.author
+				return message.channel
 					.send(
 						embed
 							.setAuthor(nickname, message.author.displayAvatarURL())
@@ -125,7 +206,7 @@ module.exports = async (bot, message) => {
 					});
 			}
 			if (adminrole === null) {
-				return message.author
+				return message.channel
 					.send(
 						embed
 							.setAuthor(nickname, message.author.displayAvatarURL())
@@ -147,7 +228,7 @@ module.exports = async (bot, message) => {
 				!message.member.roles.cache.has(`${adminrole}`) ||
 				!message.member.hasPermission('ADMINISTRATOR')
 			) {
-				return message.author
+				return message.channel
 					.send(
 						embed
 							.setAuthor(nickname, message.author.displayAvatarURL())
@@ -168,7 +249,7 @@ module.exports = async (bot, message) => {
 		if (command.admin) {
 			let adminrole = db.get(`adminrole_${member.guild.id}`);
 			if (adminrole === null) {
-				return message.author
+				return message.channel
 					.send(
 						embed
 							.setAuthor(nickname, message.author.displayAvatarURL())
@@ -189,7 +270,7 @@ module.exports = async (bot, message) => {
 				!message.member.roles.cache.has(`${adminrole}`) ||
 				!message.member.hasPermission('ADMINISTRATOR')
 			) {
-				return message.author
+				return message.channel
 					.send(
 						embed
 							.setAuthor(nickname, message.author.displayAvatarURL())
@@ -209,7 +290,7 @@ module.exports = async (bot, message) => {
 		}
 		if (command.guildowner) {
 			if (message.author.id != message.guild.owner.id) {
-				return message.author
+				return message.channel
 					.send(
 						embed
 							.setAuthor(nickname, message.author.displayAvatarURL())
@@ -229,7 +310,7 @@ module.exports = async (bot, message) => {
 		}
 		if (command.owner) {
 			if (message.author.id != owner) {
-				return message.author
+				return message.channel
 					.send(
 						embed
 							.setAuthor(nickname, message.author.displayAvatarURL())
@@ -240,26 +321,6 @@ module.exports = async (bot, message) => {
 							.setFooter(
 								`┊BOT┊OWNER┊  ${bot.user.username}`,
 								bot.user.displayAvatarURL()
-							)
-					)
-					.then(m => {
-						m.delete({ timeout: 60000 }).catch(() => undefined);
-					});
-			}
-		}
-		if (command.botadmin) {
-			if (!message.guild.me.hasPermission('ADMINISTRATOR')) {
-				return message.author
-					.send(
-						embed
-							.setColor(`${colour}`)
-							.setDescription(
-								`<a:ERROR:${erroremoji}>┊Please Give Me to \`Administor\` Permission`
-							)
-							.setAuthor(nickname, message.author.displayAvatarURL())
-							.setFooter(
-								`┊BOT┊ADMINISTOR┊PERMISSION┊  ${client.user.username}`,
-								client.user.displayAvatarURL()
 							)
 					)
 					.then(m => {
@@ -321,7 +382,7 @@ module.exports = async (bot, message) => {
 					}
 					let CommandName =
 						command.name.charAt(0).toUpperCase() + command.name.slice(1);
-					return message.author
+					return message.channel
 						.send(
 							embed
 								.setAuthor(nickname, message.author.displayAvatarURL())
@@ -351,7 +412,7 @@ module.exports = async (bot, message) => {
 				}
 				let CommandName =
 					command.name.charAt(0).toUpperCase() + command.name.slice(1);
-				return message.author
+				return message.channel
 					.send(
 						embed
 							.setAuthor(nickname, message.author.displayAvatarURL())
@@ -419,3 +480,10 @@ module.exports = async (bot, message) => {
 		}
 	}
 };
+
+// function randomNumber
+function randomNumber(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
