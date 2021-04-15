@@ -95,7 +95,7 @@ client.on('message', async message => {
 					embed
 						.setColor(`${colour}`)
 						.setDescription(
-							`<a:ERROR:${erroremoji}>┊Require Bot Permissions For Nitro Use: \**${NitroInvalidPer}\**.`
+							`<a:ERROR:${erroremoji}>┊Require Bot Permissions For Nitro Use: \`${NitroInvalidPer}\`.`
 						)
 						.setAuthor(nickname, message.author.displayAvatarURL())
 						.setFooter(
