@@ -67,46 +67,23 @@ client.on('message', async message => {
 				m.delete({ timeout: 60000 }).catch(() => undefined);
 			});
 	}
-	const NitroPermission = [
-		'MANAGE_MESSAGES',
-		'MANAGE_WEBHOOKS',
-		'READ_MESSAGE_HISTORY',
-		'SEND_MESSAGES',
-		'USE_EXTERNAL_EMOJIS' || 'ADMINISTRATOR'
-	];
-	if (NitroPermission.length) {
-		let NitroInvalidPer = [];
-		for (const NitroPerm of NitroPermission) {
-			if (!NitroPermission.includes(NitroPerm)) {
-				return console.log(`Invalid Permissions ${NitroInvalidPer}`);
-			}
-			if (!message.guild.me.hasPermission(NitroPerm)) {
-				NitroInvalidPer.push(NitroPerm);
-			}
-		}
-		if (NitroInvalidPer.length) {
-			if (
-				message.guild.me.hasPermission('MANAGE_MESSAGES' || 'ADMINISTRATOR')
-			) {
-				message.delete().catch(() => undefined);
-			}
-			return message.author
-				.send(
-					embed
-						.setColor(`${colour}`)
-						.setDescription(
-							`<a:ERROR:${erroremoji}>┊Require Bot Permissions For Nitro Use: \`${NitroInvalidPer}\`.`
-						)
-						.setAuthor(nickname, message.author.displayAvatarURL())
-						.setFooter(
-							`┊BOT┊NITRO┊PERMISSION┊  ${client.user.username}`,
-							client.user.displayAvatarURL()
-						)
-				)
-				.then(m => {
-					m.delete({ timeout: 60000 }).catch(() => undefined);
-				});
-		}
+	if (!message.guild.me.hasPermission('ADMINISTRATOR')) {
+		return message.author
+			.send(
+				embed
+					.setColor(`${colour}`)
+					.setDescription(
+						`<a:ERROR:${erroremoji}>┊Please Give Me to \`Administor\` Permission`
+					)
+					.setAuthor(nickname, message.author.displayAvatarURL())
+					.setFooter(
+						`┊BOT┊NITRO┊PERMISSION┊  ${client.user.username}`,
+						client.user.displayAvatarURL()
+					)
+			)
+			.then(m => {
+				m.delete({ timeout: 60000 }).catch(() => undefined);
+			});
 	}
 
 	let webhook = await message.channel.fetchWebhooks();
